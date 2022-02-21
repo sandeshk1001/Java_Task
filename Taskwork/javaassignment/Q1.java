@@ -5,7 +5,7 @@ import java.util.Stack;
 
 public class Q1 {
     public static void main(String[] args) {
-        String s1="{(([]))}";
+        String s1="{(([[[]]))}";
         System.out.println(check(s1));
     }
     public static boolean check(String s1){
