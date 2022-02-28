@@ -11,7 +11,6 @@ import java.sql.*;
 
 public class ProductSequenceId implements StandardGenerator {
     private final String DEFAULT_SEQUENCE_NAME="my_Seq";
-    private static int id;
     @Override
     public Object generate(SharedSessionContractImplementor sharedSessionContractImplementor, Object o) throws HibernateException {
         Session session= Utility.getSession();
