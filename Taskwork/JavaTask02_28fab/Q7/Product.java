@@ -10,7 +10,7 @@ import org.hibernate.annotations.GenericGenerator;
 public class Product {
     @Id
     @GeneratedValue(generator = "custom-generator")
-    @GenericGenerator(strategy = "increment",name="custom-generator")
+    @GenericGenerator(strategy = "ProductSequenceId",name="custom-generator")
     private int id;
     @Column(name = "product_name")
     private String name;
