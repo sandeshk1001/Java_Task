@@ -12,6 +12,7 @@ import java.util.regex.Pattern;
 public class APIExample {
     private Map<String, User> userProfileMap = new HashMap<>();
     private Map<String, List<Tweet>> tweetsMap = new HashMap<>();
+    private Map<String, List<String>> followmap = new HashMap<>();
 
     @PostMapping("tweet/createuser")
     private ResponseEntity<String> createUser(@RequestBody Map<String,String> requestbody){
@@ -67,13 +68,41 @@ public class APIExample {
             responseEntity=new ResponseEntity<>("Email not present",HttpStatus.BAD_REQUEST);
         }else if(containsInvalidPassword(password)){
             responseEntity=new ResponseEntity<>("Password contains invalid character",HttpStatus.BAD_REQUEST);
-        } else{
-            User user =userProfileMap.get(email);
-            if (user.getPassword().equals(password)){
+        }else{
+            if (isPasswordMatch(email,password)){
                 System.out.println("Tweets are :"+tweetsMap.get(email));
                 responseEntity=new ResponseEntity<>("Tweets are :\n"+tweetsMap.get(email)+"\n",HttpStatus.OK);
             }else {
                 responseEntity=new ResponseEntity<>("Pasword not match",HttpStatus.NOT_ACCEPTABLE);
+            }
+        }
+        return responseEntity;
+    }
+
+    @PostMapping("tweet/followfriend")
+    private ResponseEntity<String> followFriend(@RequestBody Map<String,String> requestbody){
+        String email=requestbody.get("email");
+        String password=requestbody.get("password");
+        String friendEmail=requestbody.get("friendemail");
+        ResponseEntity<String> responseEntity=null;
+        if (!isContainsEmail(email) || !isContainsEmail(friendEmail)){
+            responseEntity=new ResponseEntity<>("Email not contain",HttpStatus.BAD_REQUEST);
+        }else if (!isPasswordMatch(email,password)){
+            responseEntity=new ResponseEntity<>("Password incorrect",HttpStatus.NOT_ACCEPTABLE);
+        }else if(email.equals(friendEmail)){
+            responseEntity=new ResponseEntity<>("Same mail can't added",HttpStatus.NOT_ACCEPTABLE);
+        }else{
+            if(followmap.containsKey(email)){
+                User user=userProfileMap.get(friendEmail);
+                followmap.get(email).add(user.getEmail());
+                System.out.println(followmap);
+                responseEntity=new ResponseEntity<>("Friend Added"+followmap.get(email),HttpStatus.OK);
+            }else{
+                List<String> friendlist=new ArrayList<>();
+                friendlist.add(userProfileMap.get(friendEmail).getEmail());
+                followmap.put(email,friendlist);
+                System.out.println(followmap);
+                responseEntity=new ResponseEntity<>("Friend Added"+followmap.get(email),HttpStatus.OK);
             }
         }
         return responseEntity;
@@ -110,6 +139,15 @@ public class APIExample {
         return true;
     }
 
+    private boolean isPasswordMatch(String email,String password) {
+        User user = userProfileMap.get(email);
+        if (user.getPassword().equals(password)) {
+            return true;
+        }else{
+            return false;
+        }
+    }
+
     private Boolean isContainsEmail(String email) {
         if (userProfileMap.containsKey(email))
             return true;
@@ -117,3 +155,4 @@ public class APIExample {
     }
 
 }
+
